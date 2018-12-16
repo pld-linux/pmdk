@@ -7,20 +7,20 @@
 Summary:	Persistent Memory Development Kit
 Summary(pl.UTF-8):	Persistent Memory Development Kit - oprogramowanie do obsługi pamięci nieulotnej
 Name:		pmdk
-Version:	1.4
+Version:	1.5
 Release:	1
 License:	BSD
 Group:		Applications/System
 #Source0Download: https://github.com/pmem/pmdk/releases
 Source0:	https://github.com/pmem/pmdk/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	8813455d9518b8d7e0c296a706314940
+# Source0-md5:	32cf94f0c8f754c94e5b91fd41ea102c
 URL:		http://pmem.io/pmdk/
 BuildRequires:	autoconf >= 2.50
 %{?with_ndctl:BuildRequires:	daxctl-devel >= 59.2}
 %{?with_libfabric:BuildRequires:	libfabric-devel >= 1.4.2}
-BuildRequires:	libstdc++-devel >= 6:4.8
 %{?with_ndctl:BuildRequires:	ndctl-devel >= 59.2}
 BuildRequires:	pkgconfig
+BuildRequires:	rpmbuild(macros) >= 1.673
 Requires:	%{name}-libs = %{version}-%{release}
 ExclusiveArch:	%{x8664} aarch64
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -39,11 +39,26 @@ nieulotnej (Non-Volatile Memory).
 Ten pakiet zawiera narzędzie linii poleceń pmemtool - samodzielne
 narzędzie do zarządzania pamięcią off-line.
 
+%package python
+Summary:	Python based PMDK utilities
+Summary(pl.UTF-8):	Narzędzia PMDK napisane w Pythonie
+Group:		Applications/System
+Requires:	%{name} = %{version}-%{release}
+
+%description python
+Python based PMDK utilities. Currently it contains:
+- pmreorder: store reordering tool
+
+%description python -l pl.UTF-8
+Narzędzia PMDK napisane w Pythonie. Obecnie zawierają:
+- pmreorder: narzędzie do zmiany kolejności zapisów
+
 %package -n bash-completion-pmdk
 Summary:	Bash completion for PMDK utilities
 Summary(pl.UTF-8):	Bashowe uzupełnianie parametrów poleceń PMDK
 Group:		Applications/Shells
 Requires:	%{name} = %{version}-%{release}
+Requires:	bash-completion >= 2.0
 
 %description -n bash-completion-pmdk
 Bash completion for PMDK pmempool utility.
@@ -63,7 +78,6 @@ Memory (NVM):
 - libpmemblk, libpmemlog, libpmemobj - pmem transactions
 - libvmem, libvmmalloc - volatile use of pmem
 - libpmempool - persistent memory pool management
-- libpmemcto - close-to-open persistence (EXPERIMENTAL)
 
 %description libs -l pl.UTF-8
 Ten pakiet zawiera zestaw bibliotek do wykorzystywania pamięci
@@ -72,7 +86,6 @@ nieulotnej (NVM - Non-Volatile Memory):
 - libpmemblk, libpmemlog, libpmemobj - transakcje pmem
 - libvmem, libvmmalloc - ulotne wykorzystanie pmem
 - libpmempool - zarządzanie pulą pamięci nieulotnej
-- libpmemcto - trwałość między close a open (EKSPERYMENTALNA)
 
 %package devel
 Summary:	Header files for PMDK libraries
@@ -97,33 +110,6 @@ Static PMDK libraries.
 
 %description static -l pl.UTF-8
 Statyczne biblioteki PMDK.
-
-%package c++-devel
-Summary:	C++ bindings for PMDK libpmemobj library
-Summary(pl.UTF-8):	Wiązania C++ do biblioteki PMDK libpmemobj
-Group:		Development/Libraries
-Requires:	%{name}-devel = %{version}-%{release}
-Requires:	libstdc++-devel >= 6:4.8
-
-%description c++-devel
-C++ bindings for PMDK libpmemobj library.
-
-%description c++-devel -l pl.UTF-8
-Wiązania C++ do biblioteki PMDK libpmemobj.
-
-%package c++-apidocs
-Summary:	API documentation for libpmemobj++ library
-Summary(pl.UTF-8):	Dokumentacja API biblioteki libpmemobj++
-Group:		Documentation
-%if "%{_rpmversion}" >= "5"
-BuildArch:	noarch
-%endif
-
-%description c++-apidocs
-API documentation for libpmemobj++ library.
-
-%description c++-apidocs -l pl.UTF-8
-Dokumentacja API biblioteki libpmemobj++.
 
 %package dax
 Summary:	PMDK utility for Device-DAX devices
@@ -230,6 +216,7 @@ rm -rf $RPM_BUILD_ROOT
 	DESTDIR=$RPM_BUILD_ROOT \
 	%{!?with_libfabric:BUILD_RPMEM=n} \
 	%{?with_ndctl:NDCTL_ENABLE=y} \
+	bashcompdir=%{bash_compdir} \
 	includedir=%{_includedir} \
 	libdir=%{_libdir} \
 	prefix=%{_prefix} \
@@ -237,8 +224,6 @@ rm -rf $RPM_BUILD_ROOT
 
 # debug libraries - needed for anything?
 %{__rm} -r $RPM_BUILD_ROOT%{_libdir}/pmdk_debug
-# packaged as %doc in -apidocs
-%{__rm} -r $RPM_BUILD_ROOT%{_docdir}/libpmemobj++-dev
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -258,15 +243,23 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/pmempool-convert.1*
 %{_mandir}/man1/pmempool-create.1*
 %{_mandir}/man1/pmempool-dump.1*
+%{_mandir}/man1/pmempool-feature.1*
 %{_mandir}/man1/pmempool-info.1*
 %{_mandir}/man1/pmempool-rm.1*
 %{_mandir}/man1/pmempool-sync.1*
 %{_mandir}/man1/pmempool-transform.1*
+%{_mandir}/man5/pmem_ctl.5*
 %{_mandir}/man5/poolset.5*
+
+%files python
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/pmreorder
+%{_mandir}/man1/pmreorder.1*
+%{_datadir}/pmreorder
 
 %files -n bash-completion-pmdk
 %defattr(644,root,root,755)
-/etc/bash_completion.d/pmempool.sh
+%{bash_compdir}/pmempool
 
 %files libs
 %defattr(644,root,root,755)
@@ -275,8 +268,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %ghost %{_libdir}/libpmem.so.1
 %attr(755,root,root) %{_libdir}/libpmemblk.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libpmemblk.so.1
-%attr(755,root,root) %{_libdir}/libpmemcto.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libpmemcto.so.1
 %attr(755,root,root) %{_libdir}/libpmemlog.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libpmemlog.so.1
 %attr(755,root,root) %{_libdir}/libpmemobj.so.*.*.*
@@ -292,7 +283,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libpmem.so
 %attr(755,root,root) %{_libdir}/libpmemblk.so
-%attr(755,root,root) %{_libdir}/libpmemcto.so
 %attr(755,root,root) %{_libdir}/libpmemlog.so
 %attr(755,root,root) %{_libdir}/libpmemobj.so
 %attr(755,root,root) %{_libdir}/libpmempool.so
@@ -304,7 +294,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/libvmmalloc.h
 %{_pkgconfigdir}/libpmem.pc
 %{_pkgconfigdir}/libpmemblk.pc
-%{_pkgconfigdir}/libpmemcto.pc
 %{_pkgconfigdir}/libpmemlog.pc
 %{_pkgconfigdir}/libpmemobj.pc
 %{_pkgconfigdir}/libpmempool.pc
@@ -319,7 +308,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/oid_is_null.3*
 %{_mandir}/man3/pmem_*.3*
 %{_mandir}/man3/pmemblk_*.3*
-%{_mandir}/man3/pmemcto_*.3*
 %{_mandir}/man3/pmemlog_*.3*
 %{_mandir}/man3/pmemobj_*.3*
 %{_mandir}/man3/pmempool_*.3*
@@ -330,7 +318,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/vmem_*.3*
 %{_mandir}/man7/libpmem.7*
 %{_mandir}/man7/libpmemblk.7*
-%{_mandir}/man7/libpmemcto.7*
 %{_mandir}/man7/libpmemlog.7*
 %{_mandir}/man7/libpmemobj.7*
 %{_mandir}/man7/libpmempool.7*
@@ -341,24 +328,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %{_libdir}/libpmem.a
 %{_libdir}/libpmemblk.a
-%{_libdir}/libpmemcto.a
 %{_libdir}/libpmemlog.a
 %{_libdir}/libpmemobj.a
 %{_libdir}/libpmempool.a
 %{_libdir}/libvmem.a
 %{_libdir}/libvmmalloc.a
-
-%files c++-devel
-%defattr(644,root,root,755)
-%doc src/include/libpmemobj++/README.md
-%{_includedir}/libpmemobj++
-%{_pkgconfigdir}/libpmemobj++.pc
-
-%if %{with apidocs}
-%files c++-apidocs
-%defattr(644,root,root,755)
-%doc doc/cpp_html/*
-%endif
 
 %if %{with ndctl}
 %files dax
