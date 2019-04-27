@@ -7,18 +7,18 @@
 Summary:	Persistent Memory Development Kit
 Summary(pl.UTF-8):	Persistent Memory Development Kit - oprogramowanie do obsługi pamięci nieulotnej
 Name:		pmdk
-Version:	1.5
+Version:	1.6
 Release:	1
 License:	BSD
 Group:		Applications/System
 #Source0Download: https://github.com/pmem/pmdk/releases
 Source0:	https://github.com/pmem/pmdk/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	32cf94f0c8f754c94e5b91fd41ea102c
+# Source0-md5:	b4de1cae26b19f69c4accec5cfd9aee3
 URL:		http://pmem.io/pmdk/
 BuildRequires:	autoconf >= 2.50
-%{?with_ndctl:BuildRequires:	daxctl-devel >= 59.2}
+%{?with_ndctl:BuildRequires:	daxctl-devel >= 64.1}
 %{?with_libfabric:BuildRequires:	libfabric-devel >= 1.4.2}
-%{?with_ndctl:BuildRequires:	ndctl-devel >= 59.2}
+%{?with_ndctl:BuildRequires:	ndctl-devel >= 64.1}
 BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.673
 Requires:	%{name}-libs = %{version}-%{release}
@@ -116,8 +116,8 @@ Summary:	PMDK utility for Device-DAX devices
 Summary(pl.UTF-8):	Narzędzie PMDK do urządzeń Device-DAX
 Group:		Applications/System
 Requires:	%{name}-libs = %{version}-%{release}
-Requires:	daxctl-libs >= 59.2
-Requires:	ndctl-libs >= 59.2
+Requires:	daxctl-libs >= 64.1
+Requires:	ndctl-libs >= 64.1
 
 %description dax
 PMDK is a collection of libraries and utilities for using Non-Volatile
