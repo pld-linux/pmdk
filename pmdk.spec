@@ -7,13 +7,13 @@
 Summary:	Persistent Memory Development Kit
 Summary(pl.UTF-8):	Persistent Memory Development Kit - oprogramowanie do obsługi pamięci nieulotnej
 Name:		pmdk
-Version:	1.6
+Version:	1.8
 Release:	1
 License:	BSD
 Group:		Applications/System
 #Source0Download: https://github.com/pmem/pmdk/releases
 Source0:	https://github.com/pmem/pmdk/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	b4de1cae26b19f69c4accec5cfd9aee3
+# Source0-md5:	c291191dc6c0a31c7b794de3eb85fd7f
 URL:		http://pmem.io/pmdk/
 BuildRequires:	autoconf >= 2.50
 %{?with_ndctl:BuildRequires:	daxctl-devel >= 64.1}
@@ -76,7 +76,6 @@ This package contains a collection of libraries for using Non-Volatile
 Memory (NVM):
 - libpmem - basic pmem operations like flushing
 - libpmemblk, libpmemlog, libpmemobj - pmem transactions
-- libvmem, libvmmalloc - volatile use of pmem
 - libpmempool - persistent memory pool management
 
 %description libs -l pl.UTF-8
@@ -84,7 +83,6 @@ Ten pakiet zawiera zestaw bibliotek do wykorzystywania pamięci
 nieulotnej (NVM - Non-Volatile Memory):
 - libpmem - podstawowe operacje pmem, takie jak flush
 - libpmemblk, libpmemlog, libpmemobj - transakcje pmem
-- libvmem, libvmmalloc - ulotne wykorzystanie pmem
 - libpmempool - zarządzanie pulą pamięci nieulotnej
 
 %package devel
@@ -274,10 +272,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %ghost %{_libdir}/libpmemobj.so.1
 %attr(755,root,root) %{_libdir}/libpmempool.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libpmempool.so.1
-%attr(755,root,root) %{_libdir}/libvmem.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libvmem.so.1
-%attr(755,root,root) %{_libdir}/libvmmalloc.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libvmmalloc.so.1
 
 %files devel
 %defattr(644,root,root,755)
@@ -286,19 +280,13 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libpmemlog.so
 %attr(755,root,root) %{_libdir}/libpmemobj.so
 %attr(755,root,root) %{_libdir}/libpmempool.so
-%attr(755,root,root) %{_libdir}/libvmem.so
-%attr(755,root,root) %{_libdir}/libvmmalloc.so
 %{_includedir}/libpmemobj
 %{_includedir}/libpmem*.h
-%{_includedir}/libvmem.h
-%{_includedir}/libvmmalloc.h
 %{_pkgconfigdir}/libpmem.pc
 %{_pkgconfigdir}/libpmemblk.pc
 %{_pkgconfigdir}/libpmemlog.pc
 %{_pkgconfigdir}/libpmemobj.pc
 %{_pkgconfigdir}/libpmempool.pc
-%{_pkgconfigdir}/libvmem.pc
-%{_pkgconfigdir}/libvmmalloc.pc
 %{_mandir}/man3/d_ro.3*
 %{_mandir}/man3/d_rw.3*
 %{_mandir}/man3/direct_ro.3*
@@ -315,14 +303,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/toid.3*
 %{_mandir}/man3/toid_*.3*
 %{_mandir}/man3/tx_*.3*
-%{_mandir}/man3/vmem_*.3*
 %{_mandir}/man7/libpmem.7*
 %{_mandir}/man7/libpmemblk.7*
 %{_mandir}/man7/libpmemlog.7*
 %{_mandir}/man7/libpmemobj.7*
 %{_mandir}/man7/libpmempool.7*
-%{_mandir}/man7/libvmem.7*
-%{_mandir}/man7/libvmmalloc.7*
 
 %files static
 %defattr(644,root,root,755)
@@ -331,8 +316,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libpmemlog.a
 %{_libdir}/libpmemobj.a
 %{_libdir}/libpmempool.a
-%{_libdir}/libvmem.a
-%{_libdir}/libvmmalloc.a
 
 %if %{with ndctl}
 %files dax
