@@ -15,7 +15,6 @@ Group:		Applications/System
 Source0:	https://github.com/pmem/pmdk/archive/%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	c291191dc6c0a31c7b794de3eb85fd7f
 URL:		http://pmem.io/pmdk/
-BuildRequires:	autoconf >= 2.50
 %{?with_ndctl:BuildRequires:	daxctl-devel >= 64.1}
 %{?with_libfabric:BuildRequires:	libfabric-devel >= 1.4.2}
 %{?with_ndctl:BuildRequires:	ndctl-devel >= 64.1}
