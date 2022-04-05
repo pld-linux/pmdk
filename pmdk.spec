@@ -1,14 +1,14 @@
 #
 # Conditional build:
-%bcond_without	apidocs		# do not build and package API docs
 %bcond_without	libfabric	# RPMEM component
 %bcond_without	ndctl		# daxio component
+%bcond_without	pandoc		# do not build manpages using pandoc
 #
 Summary:	Persistent Memory Development Kit
 Summary(pl.UTF-8):	Persistent Memory Development Kit - oprogramowanie do obsługi pamięci nieulotnej
 Name:		pmdk
 Version:	1.8
-Release:	1
+Release:	2
 License:	BSD
 Group:		Applications/System
 #Source0Download: https://github.com/pmem/pmdk/releases
@@ -18,6 +18,7 @@ URL:		http://pmem.io/pmdk/
 %{?with_ndctl:BuildRequires:	daxctl-devel >= 64.1}
 %{?with_libfabric:BuildRequires:	libfabric-devel >= 1.4.2}
 %{?with_ndctl:BuildRequires:	ndctl-devel >= 64.1}
+%{?with_pandoc:BuildRequires:	pandoc}
 BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.673
 Requires:	%{name}-libs = %{version}-%{release}
@@ -196,6 +197,9 @@ Statyczna biblioteka rpmem.
 %setup -q
 
 %build
+%if !%{with pandoc}
+touch .skip-doc
+%endif
 CFLAGS="%{rpmcflags} %{rpmcppflags}" \
 %{__make} -j1 \
 	CC="%{__cc}" \
@@ -209,7 +213,11 @@ CFLAGS="%{rpmcflags} %{rpmcppflags}" \
 %install
 rm -rf $RPM_BUILD_ROOT
 
+%if %{with pandoc}
 %{__make} install \
+%else
+%{__make} -C src install \
+%endif
 	DESTDIR=$RPM_BUILD_ROOT \
 	%{!?with_libfabric:BUILD_RPMEM=n} \
 	%{?with_ndctl:NDCTL_ENABLE=y} \
@@ -235,6 +243,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc src/tools/pmempool/README
 %attr(755,root,root) %{_bindir}/pmempool
+%if %{with pandoc}
 %{_mandir}/man1/pmempool.1*
 %{_mandir}/man1/pmempool-check.1*
 %{_mandir}/man1/pmempool-convert.1*
@@ -247,11 +256,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/pmempool-transform.1*
 %{_mandir}/man5/pmem_ctl.5*
 %{_mandir}/man5/poolset.5*
+%endif
 
 %files python
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/pmreorder
+%if %{with pandoc}
 %{_mandir}/man1/pmreorder.1*
+%endif
 %{_datadir}/pmreorder
 
 %files -n bash-completion-pmdk
@@ -286,6 +298,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/libpmemlog.pc
 %{_pkgconfigdir}/libpmemobj.pc
 %{_pkgconfigdir}/libpmempool.pc
+%if %{with pandoc}
 %{_mandir}/man3/d_ro.3*
 %{_mandir}/man3/d_rw.3*
 %{_mandir}/man3/direct_ro.3*
@@ -307,6 +320,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man7/libpmemlog.7*
 %{_mandir}/man7/libpmemobj.7*
 %{_mandir}/man7/libpmempool.7*
+%endif
 
 %files static
 %defattr(644,root,root,755)
@@ -321,7 +335,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc src/tools/daxio/README
 %attr(755,root,root) %{_bindir}/daxio
+%if %{with pandoc}
 %{_mandir}/man1/daxio.1*
+%endif
 %endif
 
 %if %{with libfabric}
@@ -329,7 +345,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc src/tools/rpmemd/README
 %attr(755,root,root) %{_bindir}/rpmemd
+%if %{with pandoc}
 %{_mandir}/man1/rpmemd.1*
+%endif
 
 %files rpmem-libs
 %defattr(644,root,root,755)
@@ -341,8 +359,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/librpmem.so
 %{_includedir}/librpmem.h
 %{_pkgconfigdir}/librpmem.pc
+%if %{with pandoc}
 %{_mandir}/man3/rpmem_*.3*
 %{_mandir}/man7/librpmem.7*
+%endif
 
 %files rpmem-static
 %defattr(644,root,root,755)
