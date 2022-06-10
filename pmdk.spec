@@ -7,13 +7,13 @@
 Summary:	Persistent Memory Development Kit
 Summary(pl.UTF-8):	Persistent Memory Development Kit - oprogramowanie do obsługi pamięci nieulotnej
 Name:		pmdk
-Version:	1.8
-Release:	2
+Version:	1.12.0
+Release:	1
 License:	BSD
 Group:		Applications/System
 #Source0Download: https://github.com/pmem/pmdk/releases
-Source0:	https://github.com/pmem/pmdk/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	c291191dc6c0a31c7b794de3eb85fd7f
+Source0:	https://github.com/pmem/pmdk/releases/download/%{version}/%{name}-%{version}.tar.gz
+# Source0-md5:	85ee6f76f1005a1910940a35264413a9
 URL:		http://pmem.io/pmdk/
 %{?with_ndctl:BuildRequires:	daxctl-devel >= 64.1}
 %{?with_libfabric:BuildRequires:	libfabric-devel >= 1.4.2}
@@ -22,7 +22,7 @@ URL:		http://pmem.io/pmdk/
 BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.673
 Requires:	%{name}-libs = %{version}-%{release}
-ExclusiveArch:	%{x8664} aarch64
+ExclusiveArch:	%{x8664} aarch64 ppc64 riscv64
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -275,6 +275,8 @@ rm -rf $RPM_BUILD_ROOT
 %doc ChangeLog LICENSE
 %attr(755,root,root) %{_libdir}/libpmem.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libpmem.so.1
+%attr(755,root,root) %{_libdir}/libpmem2.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libpmem2.so.1
 %attr(755,root,root) %{_libdir}/libpmemblk.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libpmemblk.so.1
 %attr(755,root,root) %{_libdir}/libpmemlog.so.*.*.*
@@ -287,13 +289,16 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libpmem.so
+%attr(755,root,root) %{_libdir}/libpmem2.so
 %attr(755,root,root) %{_libdir}/libpmemblk.so
 %attr(755,root,root) %{_libdir}/libpmemlog.so
 %attr(755,root,root) %{_libdir}/libpmemobj.so
 %attr(755,root,root) %{_libdir}/libpmempool.so
+%{_includedir}/libpmem2
 %{_includedir}/libpmemobj
 %{_includedir}/libpmem*.h
 %{_pkgconfigdir}/libpmem.pc
+%{_pkgconfigdir}/libpmem2.pc
 %{_pkgconfigdir}/libpmemblk.pc
 %{_pkgconfigdir}/libpmemlog.pc
 %{_pkgconfigdir}/libpmemobj.pc
@@ -307,6 +312,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/oid_instanceof.3*
 %{_mandir}/man3/oid_is_null.3*
 %{_mandir}/man3/pmem_*.3*
+%{_mandir}/man3/pmem2_*.3*
 %{_mandir}/man3/pmemblk_*.3*
 %{_mandir}/man3/pmemlog_*.3*
 %{_mandir}/man3/pmemobj_*.3*
@@ -316,6 +322,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/toid_*.3*
 %{_mandir}/man3/tx_*.3*
 %{_mandir}/man7/libpmem.7*
+%{_mandir}/man7/libpmem2.7*
+%{_mandir}/man7/libpmem2_unsafe_shutdown.7*
 %{_mandir}/man7/libpmemblk.7*
 %{_mandir}/man7/libpmemlog.7*
 %{_mandir}/man7/libpmemobj.7*
@@ -325,6 +333,7 @@ rm -rf $RPM_BUILD_ROOT
 %files static
 %defattr(644,root,root,755)
 %{_libdir}/libpmem.a
+%{_libdir}/libpmem2.a
 %{_libdir}/libpmemblk.a
 %{_libdir}/libpmemlog.a
 %{_libdir}/libpmemobj.a
