@@ -7,13 +7,13 @@
 Summary:	Persistent Memory Development Kit
 Summary(pl.UTF-8):	Persistent Memory Development Kit - oprogramowanie do obsługi pamięci nieulotnej
 Name:		pmdk
-Version:	1.12.0
+Version:	1.12.1
 Release:	1
 License:	BSD
 Group:		Applications/System
 #Source0Download: https://github.com/pmem/pmdk/releases
 Source0:	https://github.com/pmem/pmdk/releases/download/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	85ee6f76f1005a1910940a35264413a9
+# Source0-md5:	96cbc6a55598c367836ce6e83c5b1674
 URL:		http://pmem.io/pmdk/
 %{?with_ndctl:BuildRequires:	daxctl-devel >= 64.1}
 %{?with_libfabric:BuildRequires:	libfabric-devel >= 1.4.2}
